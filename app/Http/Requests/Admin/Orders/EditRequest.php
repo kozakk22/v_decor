@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Admin\Customers;
+namespace App\Http\Requests\Admin\Orders;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateRequest extends FormRequest
+class EditRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,13 +26,9 @@ class UpdateRequest extends FormRequest
 
         return [
 
-            'phone_number' => 'nullable|string',
-            'fio' => 'nullable|string',
-            'city' => 'nullable|string',
-            'post_number' => 'nullable|string',
-            'mail' => 'nullable|string',
-            'order_id' => 'numeric',
-            'page' => ''
+           'page' => ''
+
+
         ];
     }
 }

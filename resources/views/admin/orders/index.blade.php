@@ -3,14 +3,18 @@
     <div class="d-flex text-center p-3 my-3 bg-warning rounded shadow-sm">
 
         <h1 class="h6 mb-0 lh-1">
-            Замовлення
+            @if($switch === true)
+                Всі замовлення
+            @else
+                <div class="text-danger">Не закриті замовлення</div>
+            @endif
         </h1>
 
     </div>
-    <div class="text-center p-3 my-3 rounded shadow-sm">
-        <a href="{{ route('admin.orders.switch') }}" class="btn btn-warning">
+    <div class="my-3 p-3 bg-body rounded shadow-sm">
+        <a href="{{ route('admin.orders.switch') }}" class="btn btn-primary">
             @if($switch === true)
-                Показати не закриті замовлення
+                Показати тільки не закриті замовлення
             @else
                 Показати всі замовлення
             @endif
@@ -21,7 +25,9 @@
     @foreach($orders as $order)
         @if($old_order_id != $order->order_id)
             @if($old_order_id != 0)
-                <tr><td></td><td class="text-center">Всього: {{ $all_price }} грн.</td><td></td><td></td><td></td><td></td></tr>
+                @if($old_type != 10)
+                <tr><td>Замовлено: {{ $order->created_at }}</td><td class="text-center">Всього: {{ $all_price }} грн.</td><td></td><td></td><td></td><td></td></tr>
+                @endif
                 @php($all_price = 0)
                 </tbody>
             </table>
@@ -31,17 +37,16 @@
         <table class="table">
             <thead>
             <tr class="text-center">
-                <th scope="col" style="width: 20%">Товар</th>
+                <th scope="col" style="width: 15%">Товар</th>
                 <th scope="col">Замовник</th>
                 <th scope="col">Нотатки</th>
                 <th scope="col">Статус</th>
-                <th scope="col">Дата</th>
                 <th scope="col">Редагувати</th>
             </tr>
             </thead>
                 <tbody>
         @endif
-                @if ($order->order_id != 0)
+                @if ($order->type_payment_id != 10)
                 <tr class="text-center">
                     <td>
                         <img src="{{ url('storage/' . $order->good->image_main)  }}" alt="image" style="width:100px;"><br>
@@ -60,10 +65,11 @@
                     <td>{{ $order->addition }}</td>
                     <td>
                         @if($order->called == 0 && $order->sent == 0 && $order->returned == 0 && $order->money_received == 0 && $order->reason_for_not_sending == null)
-                            <div @if($order->reason_for_not_sending == '') class="text-danger" @endif >Очікує дзвінка.</div><br>
+                            <div @if($order->reason_for_not_sending == '') class="text-danger" @endif >Очікує дзвінка.</div>
                             <form action="{{ route('admin.orders.update', $order->id) }}" method="post" enctype="multipart/form-data">
                                 @csrf
                                 @method('patch')
+                                <input type="hidden" name="page" value="{{ $orders->currentPage() }}">
                                 <input type="hidden" name="status" value="2">
                                 <button type="submit" class="btn btn-primary">
                                 Подзвонено
@@ -73,10 +79,11 @@
                                 </button>
                             </form>
                         @elseif($order->called == 1 && $order->sent == 0 && $order->returned == 0 && $order->money_received == 0 && $order->reason_for_not_sending == null)
-                            <div @if($order->reason_for_not_sending == '') class="text-danger" @endif >Подзвонено.</div><br>
+                            <div @if($order->reason_for_not_sending == '') class="text-danger" @endif >Подзвонено.</div>
                             <form action="{{ route('admin.orders.update', $order->id) }}" method="post" enctype="multipart/form-data">
                                 @csrf
                                 @method('patch')
+                                <input type="hidden" name="page" value="{{ $orders->currentPage() }}">
                                 <input type="hidden" name="status" value="3">
                                 <button type="submit" class="btn btn-primary">
                                 Відправлено
@@ -89,6 +96,7 @@
                             <form action="{{ route('admin.orders.update', $order->id) }}" method="post" enctype="multipart/form-data">
                                 @csrf
                                 @method('patch')
+                                <input type="hidden" name="page" value="{{ $orders->currentPage() }}">
                                 <input type="hidden" name="status" value="1">
                                 <button type="submit" class="btn btn-primary">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
@@ -98,10 +106,11 @@
                                 </button>
                             </form>
                         @elseif($order->called == 1 && $order->sent == 1 && $order->returned == 0 && $order->money_received == 0 && $order->reason_for_not_sending == null)
-                            <div class="text-danger">Відправлено.</div><br>
+                            <div class="text-danger">Відправлено.</div>
                             <form action="{{ route('admin.orders.update', $order->id) }}" method="post" enctype="multipart/form-data">
                                 @csrf
                                 @method('patch')
+                                <input type="hidden" name="page" value="{{ $orders->currentPage() }}">
                                 <input type="hidden" name="status" value="5">
                                 <button type="submit" class="btn btn-primary">
                                 Гроші забрано
@@ -114,6 +123,7 @@
                             <form action="{{ route('admin.orders.update', $order->id) }}" method="post" enctype="multipart/form-data">
                                 @csrf
                                 @method('patch')
+                                <input type="hidden" name="page" value="{{ $orders->currentPage() }}">
                                 <input type="hidden" name="status" value="2">
                                 <button type="submit" class="btn btn-primary">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
@@ -123,10 +133,11 @@
                                 </button>
                             </form>
                         @elseif($order->called == 1 && $order->sent == 1 && $order->returned == 0 && $order->money_received == 1 && $order->reason_for_not_sending == null)
-                            Гроші забрано.<br><br>
+                            Гроші забрано.<br>
                             <form action="{{ route('admin.orders.update', $order->id) }}" method="post" enctype="multipart/form-data">
                                 @csrf
                                 @method('patch')
+                                <input type="hidden" name="page" value="{{ $orders->currentPage() }}">
                                 <input type="hidden" name="status" value="3">
                                 <button type="submit" class="btn btn-primary">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
@@ -136,10 +147,11 @@
                                 </button>
                             </form>
                         @elseif($order->called == 1 && $order->sent == 1 && $order->returned == 1 && $order->money_received == 0 && $order->reason_for_not_sending == null)
-                            Повенуто.<br><br>
+                            Повенуто.<br>
                             <form action="{{ route('admin.orders.update', $order->id) }}" method="post" enctype="multipart/form-data">
                                 @csrf
                                 @method('patch')
+                                <input type="hidden" name="page" value="{{ $orders->currentPage() }}">
                                 <input type="hidden" name="status" value="3">
                                 <button type="submit" class="btn btn-primary">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
@@ -152,15 +164,24 @@
                             Не відправлено по причині: {{ $order->reason_for_not_sending }}<br><br>
 
                         @endif
+                        @foreach($order->customer->orders as $history_order)
+                            @if($history_order->returned == 1)
+                               <div class="text-danger">У замовника повернуте замовлення. @if($history_order->reason_for_return != null){{ $history_order->reason_for_return }}@endif</div>
+                            @endif
+                        @endforeach
                     </td>
 
-                    <td>{{ $order->created_at }}</td>
-                    <td><a href="{{ route('admin.orders.edit', $order->id) }}" class="btn btn-primary">Редагувати</a></td>
+
+                    <td><form action="{{ route('admin.orders.edit', $order->id) }}" method="get" enctype="multipart/form-data">
+                            <input type="hidden" name="page" value="{{ $orders->currentPage() }}">
+                            <button class="btn btn-primary" type="submit">Редагувати</button>
+                        </form></td>
                 </tr>
                 @else
                     <tr class="text-center">
                         <td>
-                            Замовлення дзвінка
+                            Замовлення дзвінка<br><br>
+                            Замовлено: {{ $order->created_at }}
                         </td>
                         <td>
                             {{ $order->customer->phone_number }}<br>
@@ -172,6 +193,7 @@
                                 <form action="{{ route('admin.orders.update', $order->id) }}" method="post" enctype="multipart/form-data">
                                     @csrf
                                     @method('patch')
+                                    <input type="hidden" name="page" value="{{ $orders->currentPage() }}">
                                     <input type="hidden" name="status" value="2">
                                     <button type="submit" class="btn btn-primary">
                                         Подзвонено
@@ -185,6 +207,7 @@
                                 <form action="{{ route('admin.orders.update', $order->id) }}" method="post" enctype="multipart/form-data">
                                     @csrf
                                     @method('patch')
+                                    <input type="hidden" name="page" value="{{ $orders->currentPage() }}">
                                     <input type="hidden" name="status" value="1">
                                     <button type="submit" class="btn btn-primary">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
@@ -194,8 +217,8 @@
                                     </button>
                                 </form>
                             @endif
+
                         </td>
-                        <td>{{ $order->created_at }}</td>
                         <td>
                             <form action="{{ route('admin.orders.destroy', $order->id) }}" method="post" id="form" enctype="multipart/form-data">
                                 @csrf
@@ -207,6 +230,7 @@
                 @endif
                 @php($all_price = $all_price + ($order->price * $order->quantity))
                 @php($old_order_id = $order->order_id)
+                @php($old_type = $order->type_payment_id)
         @endforeach
                 </tbody>
         </table>

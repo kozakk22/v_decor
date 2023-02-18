@@ -12,8 +12,10 @@ class UpdateCustomerController extends BaseController
     public function update (Customer $customer, UpdateRequest $request)
     {
         $data = $request->validated();
+        $page = $data['page'];
+        unset($data['page']);
         $order_id = $this->service->update($data, $customer);
-        return redirect()->route('admin.orders.edit', $order_id);
+        return redirect()->route('admin.orders.edit', [$order_id, 'page='.$page]);
     }
 
 }

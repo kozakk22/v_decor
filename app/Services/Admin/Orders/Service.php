@@ -23,12 +23,12 @@
                 $good = $order->good;
                 if($order->money_received === 1)
                 {
-                    $new_good['number_of_sales'] = $good->number_of_sales - 1;
+                    $new_good['number_of_sales'] = $good->number_of_sales - $data['quantity'];
                     $good->update($new_good);
                 }
                 if($order->returned === 1)
                 {
-                    $new_good['number_of_returns'] = $good->number_of_returns - 1;
+                    $new_good['number_of_returns'] = $good->number_of_returns - $data['quantity'];
                     $good->update($new_good);
                 }
             }
@@ -41,12 +41,12 @@
                 $good = $order->good;
                 if($order->money_received === 1)
                 {
-                    $new_good['number_of_sales'] = $good->number_of_sales - 1;
+                    $new_good['number_of_sales'] = $good->number_of_sales - $data['quantity'];
                     $good->update($new_good);
                 }
                 if($order->returned === 1)
                 {
-                    $new_good['number_of_returns'] = $good->number_of_returns - 1;
+                    $new_good['number_of_returns'] = $good->number_of_returns - $data['quantity'];
                     $good->update($new_good);
                 }
             }
@@ -60,12 +60,12 @@
                 $good = $order->good;
                 if($order->money_received === 1)
                 {
-                    $new_good['number_of_sales'] = $good->number_of_sales - 1;
+                    $new_good['number_of_sales'] = $good->number_of_sales - $data['quantity'];
                     $good->update($new_good);
                 }
                 if($order->returned === 1)
                 {
-                    $new_good['number_of_returns'] = $good->number_of_returns - 1;
+                    $new_good['number_of_returns'] = $good->number_of_returns - $data['quantity'];
                     $good->update($new_good);
                 }
             }
@@ -79,10 +79,10 @@
                 $good = $order->good;
                 if($order->money_received === 1)
                 {
-                    $new_good['number_of_sales'] = $good->number_of_sales - 1;
+                    $new_good['number_of_sales'] = $good->number_of_sales - $data['quantity'];
                 }
 
-                $new_good['number_of_returns'] = $good->number_of_returns + 1;
+                $new_good['number_of_returns'] = $good->number_of_returns + $data['quantity'];
                 $good->update($new_good);
             }
             elseif($data['status'] == '5')
@@ -95,9 +95,9 @@
                 $good = $order->good;
                 if($order->returned === 1)
                 {
-                    $new_good['number_of_returns'] = $good->number_of_returns - 1;
+                    $new_good['number_of_returns'] = $good->number_of_returns - $data['quantity'];
                 }
-                $new_good['number_of_sales'] = $good->number_of_sales + 1;
+                $new_good['number_of_sales'] = $good->number_of_sales + $data['quantity'];
                 $good->update($new_good);
             }
             unset($data['status']);
@@ -109,7 +109,7 @@
                 $new_good['quantity_in_stoke'] = $good->quantity_in_stoke - $data['quantity'];
                 $good->update($new_good);
             }
-            else if(!isset($order['reason_for_not_sending']) && $data['reason_for_not_sending'] != null)
+            else if(!isset($order['reason_for_not_sending']) && isset($data['reason_for_not_sending']) && $data['reason_for_not_sending'] != null)
             {
                 $new_good['quantity_in_stoke'] = $good->quantity_in_stoke + $data['quantity'];
                 $good->update($new_good);

@@ -36,7 +36,7 @@ class IndexController extends Controller
             ['on_off', '=', true],
             ])
             ->orderByRaw('((price * number_of_sales) - ((price + 60) * number_of_returns)) * number_of_views DESC')
-            ->paginate(6)->withQueryString();
+            ->paginate(21)->withQueryString();
 
         $shop = Controller::shop();
         $filters = session()->all();

@@ -30,7 +30,7 @@
     </style>
 
 </head>
-<body class="bg-light">
+<body class="bg-secondary">
 
 <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark" aria-label="Main navigation">
     <div class="container-fluid">
@@ -67,13 +67,13 @@
 
             @if($menu == 'goods')
                 <form class="d-flex" action="{{ route('admin.goods.index') }}" method="get" enctype="multipart/form-data">
-                    <input class="form-control me-3" type="search" name="search" placeholder="Пошук" aria-label="Search" @isset($search) value="{{  $search  }}" @endisset>
+                    <input class="form-control me-3" type="search" name="search" placeholder="Назва товару" aria-label="Search" @isset($search) value="{{  $search  }}" @endisset>
                     <button class="btn btn-outline-warning" type="submit">Пошук</button>
                 </form>
             @endif
             @if($menu == 'orders')
                 <form class="d-flex" action="{{ route('admin.orders.index') }}" method="get" enctype="multipart/form-data">
-                    <input class="form-control me-3" type="search" name="search" placeholder="Пошук" aria-label="Search" @isset($search)  value="{{ $search }}" @endisset>
+                    <input class="form-control me-3" type="search" name="search" placeholder="Номер тел замовника" aria-label="Search" @isset($search)  value="{{ $search }}" @endisset>
                     <button class="btn btn-outline-warning" type="submit">Пошук</button>
                 </form>
             @endif

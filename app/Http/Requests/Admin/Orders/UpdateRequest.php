@@ -34,6 +34,7 @@ class UpdateRequest extends FormRequest
             'status' => 'numeric',
             'reason_for_not_sending' => 'nullable|string',
             'reason_for_return' => 'nullable|string',
+            'page' => ''
 
 
         ];

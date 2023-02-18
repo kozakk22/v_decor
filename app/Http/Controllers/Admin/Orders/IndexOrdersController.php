@@ -25,9 +25,10 @@ class IndexOrdersController extends BaseController
             if(isset($customer_id['id'])) {
                 $filter_request['customer_id'] = $customer_id['id'];
             }
-            else{
+            else if (isset($filter_request['phone_number'])){
                 $filter_request['customer_id'] = $filter_request['phone_number'];
             }
+            session()->put('switch', true);
         }
 
         $filter = app()->make(OrderFilter::class, ['queryParams' => array_filter($filter_request)]);
@@ -35,16 +36,16 @@ class IndexOrdersController extends BaseController
         {
             $orders = Order::filter($filter)
                 ->orderByRaw('order_id DESC')
-                ->paginate(10);
+                ->paginate(30)->withQueryString();
         }
         else
         {
-            $orders = Order::filter($filter)
-                ->where('returned', 0)
-                ->where('money_received', 0)
-                ->where('reason_for_not_sending', null)
+            $orders = Order::where([['type_payment_id', '!=',  10], ['returned', 0]])
+                ->where([['type_payment_id', '!=',  10], ['money_received', 0]])
+                ->where([['type_payment_id', '!=',  10], ['reason_for_not_sending', null]])
+                ->orWhere([['type_payment_id', 10], ['called', 0]])
                 ->orderByRaw('order_id DESC')
-                ->paginate(10);
+                ->paginate(30)->withQueryString();
         }
 
 

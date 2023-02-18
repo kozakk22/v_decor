@@ -212,7 +212,7 @@
                     </form>
                     <form action="{{ route('card', $good->id) }}" method="get" enctype="multipart/form-data">
                         <input type="hidden" name="cart" value="{{ $good->id }}">
-                        <button type="submit" class="btn btn-warning btn-lg mt-4">Додати в корзину</button>
+                        <button type="submit" class="btn btn-warning btn-lg mt-4">Або додати в корзину</button>
                     </form>
 
 

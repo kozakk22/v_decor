@@ -40,7 +40,10 @@ class Service
             ], $data);
             $order['customer_id'] = $customer->id;
             $order['good_id'] = 1;
-            $order['order_id'] = 0;
+            $order_id = Order::orderByRaw('order_id DESC')->pluck('order_id')->first();
+            $order_id++;
+            $order['order_id'] = $order_id;
+            $order['type_payment_id'] = 10;
             Order::create($order);
 
         }
@@ -77,7 +80,7 @@ class Service
             $order['quantity'] = $data['quantity'];
             unset($data['quantity']);
             $order['good_id'] = $good->id;
-            $order['price'] = $order['quantity'] * $good->price;
+            $order['price'] = $good->price;
             $order['order_id'] = $order_id;
             $order['type_payment_id'] = 1;
             $order['called'] = 0;

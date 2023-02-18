@@ -29,7 +29,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row"><label for="price">Ціна</label></th>
+                    <th scope="row"><label for="price">Ціна за 1 штуку</label></th>
                     <td colspan="2">
                         <input class="form-control" type="number" id="price" name="price" value="{{ old('price') !== null ? old('price') : $order->price }}">
                         @error('price')
@@ -99,7 +99,8 @@
                 </tbody>
             </table>
         <div class="position-relative">
-        <a href="{{ route('admin.orders.index') }}" class="btn btn-primary me-5">Назад</a>
+        <a href="{{ route('admin.orders.index', 'page='.$page) }}" class="btn btn-primary me-5">Назад</a>
+        <input type="hidden" name="page" value="{{ $page }}">
         <button type="submit" class="btn btn-primary position-absolute end-0">Зберегти</button>
         </div>
     </div>
@@ -110,6 +111,7 @@
             <form action="{{ route('admin.orders.destroy', $order->id) }}" method="post" style="display:none" id="form" enctype="multipart/form-data">
                 @csrf
                 @method('delete')
+                <input type="hidden" name="page" value="{{ $page }}">
                 <div class="text-danger">Дійсно видалити?</div>
                 <a onclick="BackHidden()" class="btn btn-primary">Назад</a>
                 <button type="submit" class="btn btn-primary">Видалити</button>
@@ -127,6 +129,7 @@
         <div class="my-3 p-3 bg-body rounded shadow-sm">
             @csrf
             @method('patch')
+            <input type="hidden" name="page" value="{{ $page }}">
             <input type="hidden" name="order_id" value="{{ $order->id }}">
             <table class="table text-center">
                 <tbody>
@@ -179,7 +182,7 @@
             </table>
             <div class="position-relative">
 
-                <a href="{{ route('admin.orders.index') }}" class="btn btn-primary me-5">Назад</a>
+                <a href="{{ route('admin.orders.index', 'page='.$page) }}" class="btn btn-primary me-5">Назад</a>
                 <button type="submit" class="btn btn-primary position-absolute end-0">Зберегти</button>
 
             </div>
@@ -195,63 +198,71 @@
         <table class="table text-center">
             <thead>
             <tr class="text-center">
+                <th scope="col">Редагувати</th>
                 <th scope="col">Фото</th>
                 <th scope="col">Назва</th>
                 <th scope="col">Нотатки</th>
                 <th scope="col">Статус</th>
                 <th scope="col">Дата</th>
-                <th scope="col">Редагувати</th>
+
             </tr>
             </thead>
             <tbody>
             @foreach($order->customer->orders as $history_order)
                 <tr class="text-center">
+                    <td><form action="{{ route('admin.orders.edit', $history_order->id) }}" method="get" enctype="multipart/form-data">
+                            <input type="hidden" name="page" value="{{ $page }}">
+                            <button class="btn btn-primary" type="submit">Редагувати</button>
+                        </form></td>
                     <td>
                         <img src="{{ url('storage/' . $history_order->good->image_main)  }}" alt="image" style="width:100px;"><br>
                     </td>
                     <td>{{ $history_order->good->title }}</td>
                     <td>{{ $history_order->addition }}</td>
                     <td>
-                        @if($history_order->called == 0 && $history_order->sent == 0 && $history_order->returned == 0 && $history_order->money_received == 0)
+                        @if($history_order->called == 0 && $history_order->sent == 0 && $history_order->returned == 0 && $history_order->money_received == 0 && $history_order->reason_for_not_sending == null)
                             Очікує дзвінка.
-                        @elseif($history_order->called == 1 && $history_order->sent == 0 && $history_order->returned == 0 && $history_order->money_received == 0)
+                        @elseif($history_order->called == 1 && $history_order->sent == 0 && $history_order->returned == 0 && $history_order->money_received == 0 && $history_order->reason_for_not_sending == null)
                             Подзвонено.
-                        @elseif($history_order->called == 1 && $history_order->sent == 1 && $history_order->returned == 0 && $history_order->money_received == 0)
+                        @elseif($history_order->called == 1 && $history_order->sent == 1 && $history_order->returned == 0 && $history_order->money_received == 0 && $history_order->reason_for_not_sending == null)
                             Відправлено.
-                        @elseif($history_order->called == 1 && $history_order->sent == 1 && $history_order->returned == 0 && $history_order->money_received == 1)
+                        @elseif($history_order->called == 1 && $history_order->sent == 1 && $history_order->returned == 0 && $history_order->money_received == 1 && $history_order->reason_for_not_sending == null)
                             Гроші забрано.
-                        @elseif($history_order->called == 1 && $history_order->sent == 1 && $history_order->returned == 1 && $history_order->money_received == 0)
-                            Повенуто.
-                        @endif
-                    </td>
+                        @elseif($history_order->called == 1 && $history_order->sent == 1 && $history_order->returned == 1 && $history_order->money_received == 0 && $history_order->reason_for_not_sending == null)
+                            <div class="text-danger">Повенуто. {{ $history_order->reason_for_return }}</div>
+                        @elseif($history_order->reason_for_not_sending != null)
+                            Не відправлено по причині: {{ $order->reason_for_not_sending }}
+                         @endif
+</td>
 
-                    <td>{{ $order->created_at }}</td>
-                    <td><a href="{{ route('admin.orders.edit', $history_order->id) }}" class="btn btn-primary">Редагувати</a></td>
-                </tr>
-            @endforeach
-            </tbody>
-        </table>
-    </div>
-        <script>
-            function Hidden() {
-                document.getElementById('button').style.display = 'none';
-                document.getElementById('form').style.display = 'inline';
-            }
-            function BackHidden() {
-                document.getElementById('form').style.display = 'none';
-                document.getElementById('button').style.display = 'inline';
-            }
-            function Not_sending() {
-                document.getElementById('reason_for_return').disabled = true;
-                document.getElementById('reason_for_not_sending').disabled = false;
-            }
-            function Return() {
-                document.getElementById('reason_for_not_sending').disabled = true;
-                document.getElementById('reason_for_return').disabled = false;
-            }
-            function Nothing() {
-                document.getElementById('reason_for_not_sending').disabled = true;
-                document.getElementById('reason_for_return').disabled = true;
-            }
-        </script>
+<td>{{ $order->created_at }}</td>
+
+
+</tr>
+@endforeach
+</tbody>
+</table>
+</div>
+<script>
+function Hidden() {
+document.getElementById('button').style.display = 'none';
+document.getElementById('form').style.display = 'inline';
+}
+function BackHidden() {
+document.getElementById('form').style.display = 'none';
+document.getElementById('button').style.display = 'inline';
+}
+function Not_sending() {
+document.getElementById('reason_for_return').disabled = true;
+document.getElementById('reason_for_not_sending').disabled = false;
+}
+function Return() {
+document.getElementById('reason_for_not_sending').disabled = true;
+document.getElementById('reason_for_return').disabled = false;
+}
+function Nothing() {
+document.getElementById('reason_for_not_sending').disabled = true;
+document.getElementById('reason_for_return').disabled = true;
+}
+</script>
 @endsection

@@ -35,7 +35,7 @@
                     <td>{{ $good->title }}</td>
                     <td>{{ $good->price }} грн.</td>
                     <td @if($good->quantity_in_stoke == 0) class="bg-danger" @endif>{{ $good->quantity_in_stoke }}</td>
-                    <td>{{ $good->number_of_sales * $good->price - $good->number_of_returns * $good->price }} грн.</td>
+                    <td>{{ $good->number_of_sales * $good->price - $good->number_of_returns * 80 }} грн.</td>
                     <td>{{ $good->number_of_sales }}</td>
                     <td>{{ $good->number_of_returns }}</td>
                     <td><a href="{{ route('admin.goods.edit', $good->id) }}" class="btn btn-primary">Редагувати</a></td>
